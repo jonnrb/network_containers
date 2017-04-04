@@ -1,0 +1,14 @@
+{{ $id := .Docker.CurrentContainerID }}
+{{ range $c_id, $containers := groupBy $ "ID" }}
+{{ range $container := $containers }}
+{{ if eq $c_id $id }}
+
+
+{{ range $net := $container.Networks }}
+{{ $net.Name }} {{ $net.IP }}/{{ $net.IPPrefixLen }}
+{{ end }}
+
+
+{{ end}}
+{{ end }}
+{{ end }}
