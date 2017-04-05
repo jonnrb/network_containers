@@ -1,0 +1,7 @@
+{{ range $cmd, $containers := groupByMulti $ "Env.NETTER_CMD" ";" }}
+{{ range $container := $containers }}
+
+{{ $cmd }}
+
+{{ end }}
+{{ end }}
