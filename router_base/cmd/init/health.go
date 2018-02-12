@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/sparrc/go-ping"
+	"golang.org/x/net/context/ctxhttp"
 )
 
 type HealthChecker struct {
@@ -20,94 +20,53 @@ func SetupHealthCheck() io.Closer {
 	}
 	go hc.loop()
 
-	http.HandleFunc("/health", hc.Handler())
+	http.HandleFunc("/health", hc.Handler)
 
 	return hc
 }
 
-func (hc *HealthChecker) Handler() func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx, cls := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cls()
+func (hc *HealthChecker) Handler(w http.ResponseWriter, r *http.Request) {
+	ctx, cls := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cls()
 
-		var err error
-		c := make(chan error)
-		hc.c <- c
+	var err error
+	c := make(chan error)
+	hc.c <- c
 
-		select {
-		case err = <-c:
-		case <-ctx.Done():
-			err = ctx.Err()
-		}
+	select {
+	case err = <-c:
+	case <-ctx.Done():
+		err = ctx.Err()
+	}
 
-		if err != nil {
-			w.WriteHeader(http.StatusServiceUnavailable)
-			io.WriteString(w, fmt.Sprintf("%v\n", err.Error()))
-		} else {
-			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, "OK\n")
-		}
+	if err != nil {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		io.WriteString(w, fmt.Sprintf("%v\n", err.Error()))
+	} else {
+		w.WriteHeader(http.StatusOK)
+		io.WriteString(w, "OK\n")
 	}
 }
 
 func (hc *HealthChecker) Close() error {
-	hc.c <- nil
+	close(hc.c)
 	return nil
 }
 
 func (hc *HealthChecker) loop() {
-	for {
-		c := <-hc.c
-		if c == nil {
-			return
-		}
+	for ret := range hc.c {
+		ctx, klose := context.WithTimeout(context.Background(), 10*time.Second)
+		defer klose()
 
-		ctx, cls := context.WithTimeout(context.Background(), 10*time.Second)
-		err := PingCheck(ctx)
-		cls()
-
-		c <- err
-
-		for more := true; more; {
-			select {
-			case c := <-hc.c:
-				if c == nil {
-					return
-				}
-				c <- err
-			default:
-				more = false
-			}
-		}
+		err := httpHeadCheck(ctx)
+		ret <- err
 	}
 }
 
-func PingCheck(ctx context.Context) error {
-	pinger, err := ping.NewPinger("www.google.com")
-	if err != nil {
-		return fmt.Errorf("error creating pinger: %v", err)
+func httpHeadCheck(ctx context.Context) error {
+	if _, err := ctxhttp.Head(ctx, nil, "https://google.com/"); err != nil {
+		return err
+	} else {
+		return nil
 	}
-
-	const numPackets = 4
-
-	pinger.Count = numPackets
-	pinger.SetPrivileged(true)
-	if deadline, ok := ctx.Deadline(); ok {
-		pinger.Timeout = deadline.Sub(time.Now())
-		if pinger.Timeout <= 0 {
-			return fmt.Errorf("deadline exceeded")
-		}
-	}
-
-	pinger.Run()
-
-	stats := pinger.Statistics()
-	if stats.PacketsSent != numPackets {
-		return fmt.Errorf("failed to send packets %v < %v", stats.PacketsSent, numPackets)
-	}
-	if stats.PacketsSent != stats.PacketsRecv {
-		return fmt.Errorf("lost %v packets", stats.PacketsSent-stats.PacketsSent)
-	}
-
-	return nil
 }
