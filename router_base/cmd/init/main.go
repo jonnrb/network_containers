@@ -15,6 +15,7 @@ import (
 	shellquote "github.com/kballard/go-shellquote"
 	"github.com/vishvananda/netlink"
 	"golang.org/x/sync/errgroup"
+	"golang.org/x/sys/unix"
 )
 
 var (
@@ -137,6 +138,10 @@ func MaybeCreateNetworks() error {
 		return nil
 	}
 
+	if err := maybeCreateDevNetTun(); err != nil {
+		return fmt.Errorf("error creating /dev/net/tun: %v", err)
+	}
+
 	la := netlink.NewLinkAttrs()
 	la.Name = *tunCreateName
 
@@ -151,5 +156,16 @@ func MaybeCreateNetworks() error {
 		return fmt.Errorf("error creating tun %q: %v", *tunCreateName, err)
 	}
 
+	return nil
+}
+
+func maybeCreateDevNetTun() error {
+	if err := os.Mkdir("/dev/net", os.FileMode(0755)); !os.IsExist(err) && err != nil {
+		return err
+	}
+	tunMode := uint32(020666)
+	if err := unix.Mknod("/dev/net/tun", tunMode, int(unix.Mkdev(10, 200))); !os.IsExist(err) && err != nil {
+		return err
+	}
 	return nil
 }
