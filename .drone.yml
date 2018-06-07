@@ -5,6 +5,7 @@ pipeline:
     image: plugins/docker
     repo: jonnrb/hostapd
     context: ./hostapd
+    dockerfile: ./hostapd/Dockerfile
     secrets: [ docker_username, docker_password ]
 
   docker_router_base:
@@ -12,10 +13,12 @@ pipeline:
     image: plugins/docker
     repo: jonnrb/router_base
     context: ./router_base
+    dockerfile: ./router_base/Dockerfile
     secrets: [ docker_username, docker_password ]
 
   docker_router_openvpn:
     image: plugins/docker
     repo: jonnrb/router_openvpn
     context: ./router_openvpn
+    dockerfile: ./router_openvpn/Dockerfile
     secrets: [ docker_username, docker_password ]
