@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io"
@@ -12,7 +13,7 @@ import (
 	"time"
 
 	"github.com/golang/glog"
-	shellquote "github.com/kballard/go-shellquote"
+	"github.com/kballard/go-shellquote"
 	"github.com/vishvananda/netlink"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/sys/unix"
@@ -90,11 +91,16 @@ func main() {
 	hc := SetupHealthCheck()
 	defer hc.Close()
 
-	var e errgroup.Group
-
-	e.Go(func() error {
+	grp, ctx := errgroup.WithContext(context.Background())
+	grp.Go(func() error {
 		l, err := net.Listen("tcp", *httpAddr)
-		defer l.Close()
+		if err != nil {
+			return fmt.Errorf("wtf: %v", err)
+		}
+		go func() {
+			<-ctx.Done()
+			l.Close()
+		}()
 
 		_, port, err := net.SplitHostPort(l.Addr().String())
 		if err != nil {
@@ -106,8 +112,7 @@ func main() {
 
 		return http.Serve(l, nil)
 	})
-
-	e.Go(func() error {
+	grp.Go(func() error {
 		if len(args) > 0 {
 			glog.Infof("running %q", strings.Join(args, " "))
 			cmd := exec.Command(args[0], args[1:]...)
@@ -128,7 +133,7 @@ func main() {
 		return nil
 	})
 
-	if err := e.Wait(); err != nil {
+	if err := grp.Wait(); err != nil {
 		glog.Exit(err)
 	}
 }
