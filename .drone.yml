@@ -1,0 +1,21 @@
+pipeline:
+
+  docker_hostapd:
+    group: base_images
+    image: plugins/docker
+    repo: jonnrb/hostapd
+    context: ./hostapd
+    secrets: [ docker_username, docker_password ]
+
+  docker_router_base:
+    group: base_images
+    image: plugins/docker
+    repo: jonnrb/router_base
+    context: ./router_base
+    secrets: [ docker_username, docker_password ]
+
+  docker_router_openvpn:
+    image: plugins/docker
+    repo: jonnrb/router_openvpn
+    context: ./router_openvpn
+    secrets: [ docker_username, docker_password ]
