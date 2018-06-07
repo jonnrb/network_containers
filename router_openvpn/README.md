@@ -1,4 +1,4 @@
-# jonnrb/router\_openvpn [![Docker Automated Build](https://img.shields.io/docker/automated/jonnrb/router_openvpn.svg)](https://hub.docker.com/r/jonnrb/router_openvpn/) [![Docker Build Status](https://img.shields.io/docker/build/jonnrb/router_openvpn.svg)](https://hub.docker.com/r/jonnrb/router_openvpn/)
+# [jonnrb/router\_openvpn](https://hub.docker.com/r/jonnrb/router_openvpn) [![Build Status](https://drone.jonnrb.com/api/badges/jon/network_containers/status.svg?branch=master)](https://drone.jonnrb.com/jon/network_containers)
 
 ### Usage
 

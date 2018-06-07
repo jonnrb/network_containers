@@ -1,4 +1,4 @@
-# jonnrb/router\_base [![Docker Automated Build](https://img.shields.io/docker/automated/jonnrb/router_base.svg)](https://hub.docker.com/r/jonnrb/router_base/) [![Docker Build Status](https://img.shields.io/docker/build/jonnrb/router_base.svg)](https://hub.docker.com/r/jonnrb/router_base/)
+# [jonnrb/router\_base](https://hub.docker.com/r/jonnrb/router_base) [![Build Status](https://drone.jonnrb.com/api/badges/jon/network_containers/status.svg?branch=master)](https://drone.jonnrb.com/jon/network_containers)
 
 Base image for creating a more interesting Docker router. (Can be used by
 itself too.) This image provides an entrypoint (init program) that sets up
