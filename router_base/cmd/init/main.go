@@ -91,8 +91,13 @@ func main() {
 	hc := SetupHealthCheck()
 	defer hc.Close()
 
-	grp, ctx := errgroup.WithContext(context.Background())
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	grp, ctx := errgroup.WithContext(ctx)
 	grp.Go(func() error {
+		defer cancel()
+
 		l, err := net.Listen("tcp", *httpAddr)
 		if err != nil {
 			return fmt.Errorf("wtf: %v", err)
@@ -113,6 +118,8 @@ func main() {
 		return http.Serve(l, nil)
 	})
 	grp.Go(func() error {
+		defer cancel()
+
 		if len(args) > 0 {
 			glog.Infof("running %q", strings.Join(args, " "))
 			cmd := exec.Command(args[0], args[1:]...)
