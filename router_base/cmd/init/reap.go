@@ -11,7 +11,9 @@ import (
 func ReapChildren(child *os.Process) error {
 	// forward all signals to child
 	c := make(chan os.Signal)
+	defer close(c)
 	signal.Notify(c)
+	defer signal.Stop(c)
 	go func() {
 		for sig := range c {
 			child.Signal(sig)
@@ -36,7 +38,5 @@ func ReapChildren(child *os.Process) error {
 		glog.V(2).Infof("child exited with code %v", exitCode)
 	}
 
-	signal.Stop(c)
-	close(c)
 	return nil
 }
