@@ -2,6 +2,7 @@
 # Grabs all of the dependencies. These are versioned so they don't get
 # updated ever.
 set -e
+rm *.tar.gz *.patch
 wget https://w1.fi/releases/hostapd-2.6.tar.gz
 wget https://w1.fi/security/2017-1/rebased-v2.6-0001-hostapd-Avoid-key-reinstallation-in-FT-handshake.patch
 wget https://w1.fi/security/2017-1/rebased-v2.6-0002-Prevent-reinstallation-of-an-already-in-use-group-ke.patch
