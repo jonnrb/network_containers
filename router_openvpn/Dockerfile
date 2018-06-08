@@ -1,16 +1,24 @@
-from ubuntu:xenial as build
+from ubuntu:trusty as build
+
 run apt-get update \
- && apt-get install -y build-essential wget libssl-dev liblz4-dev liblzo2-dev \
- && wget https://swupdate.openvpn.org/community/releases/openvpn-2.4.4.tar.gz \
- && tar xvf openvpn-2.4.4.tar.gz \
- && cd openvpn-2.4.4 \
+ # For OpenVPN
+ && apt-get install -y build-essential libssl-dev liblz4-dev liblzo2-dev \
+ # For iproute2
+ && apt-get install -y pkg-config bison flex
+
+workdir /
+copy openvpn.tar.gz iproute2.tar.gz /
+run set -x \
+ # Build OpenVPN
+ && tar xvf openvpn.tar.gz \
+ && cd openvpn* \
  && ./configure --disable-shared --enable-static --disable-plugin-auth-pam \
-      --disable-plugin-down-root --enable-iproute2 \
+        --disable-plugin-down-root --enable-iproute2 \
  && make LIBS="-all-static" \
- && make install
-run apt-get install -y git pkg-config bison flex \
- && git clone \
-      'git://git.kernel.org/pub/scm/linux/kernel/git/shemminger/iproute2.git' \
+ && make install \
+ && cd .. \\
+ # Build iproute2
+ && tar xvf iproute2.tar.gz \
  && cd iproute2 \
  && ./configure \
  && make \
