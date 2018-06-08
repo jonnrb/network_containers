@@ -1,7 +1,6 @@
 pipeline:
 
   docker_hostapd:
-    group: base_images
     image: plugins/docker
     repo: jonnrb/hostapd
     context: ./hostapd
@@ -9,7 +8,6 @@ pipeline:
     secrets: [ docker_username, docker_password ]
 
   docker_router_base:
-    group: base_images
     image: plugins/docker
     repo: jonnrb/router_base
     context: ./router_base
