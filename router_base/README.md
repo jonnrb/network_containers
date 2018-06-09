@@ -18,7 +18,7 @@ Docker managing everything won't cut it):
 
  1. You have a mixed network where Docker containers and other endpoints are
     supposed to be happy and living together. You might want to run a
-    [DHCP server](https://github.com/JonNRb/etcdhcp) on this network to handle
+    [DHCP server](https://git.jonnrb.com/jon/etcdhcp) on this network to handle
     the other endpoints. In this case, it's a pretty good assumption you are
     (or want to be) using the `macvlan` network driver. You also might want
     to use some other uplink (VPN) for this network because you value privacy.
