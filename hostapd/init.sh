@@ -13,7 +13,7 @@ sed_script=$(cat /data/hostapd.conf.tmpl |grep -oE 'docker-network:.*$' |while r
 	network_name="$(echo "${target}" |cut -b 16-)"
 
 	# Use utils to get the bridge name.
-	bridge_name="$(/go/bin/get_bridge_name "${network_name}")"
+	bridge_name="$(/bin/get_bridge_name "${network_name}")"
 	if [ -z "${bridge_name}" ]; then
 		echo "[init.sh] [error] couldn't get bridge name for \"${network_name}\"; exiting" >&2
 		exit 1

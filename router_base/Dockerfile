@@ -9,7 +9,7 @@ run tar xjf iptables.tar.bz2 \
  && make \
  && make install
 
-from golang:1.9 as gobuild
+from golang:1.10.3 as gobuild
 add ./cmd/init /go/src/init
 run cd /go/src/init \
  && CGO_ENABLED=0 GOOS=linux go-wrapper download \

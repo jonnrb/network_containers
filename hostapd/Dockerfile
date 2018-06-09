@@ -1,8 +1,9 @@
-from golang:alpine as base
-run apk update && apk add alpine-sdk git iw \
- && go get github.com/jonnrb/docker_utils/get_bridge_name
+from golang:1.10.3 as gobuild
+run go get github.com/jonnrb/docker_utils/get_bridge_name
 
-from base
+from golang:alpine
+copy --from=gobuild /go/bin/get_bridge_name /bin/
+run apk update && apk add alpine-sdk git iw
 workdir /
 copy hostapd-2.6.tar.gz *.patch /
 
