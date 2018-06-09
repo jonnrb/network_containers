@@ -12,8 +12,7 @@ run tar xjf iptables.tar.bz2 \
 from golang:1.10.3 as gobuild
 add ./cmd/init /go/src/init
 run cd /go/src/init \
- && CGO_ENABLED=0 GOOS=linux go-wrapper download \
- && CGO_ENABLED=0 GOOS=linux go-wrapper install
+ && CGO_ENABLED=0 GOOS=linux go get .
 
 from gcr.io/distroless/base
 copy --from=cbuild /usr/local/sbin/xtables-multi /sbin/iptables
