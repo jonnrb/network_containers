@@ -13,7 +13,7 @@ run set -x \
  && tar xvf openvpn.tar.gz \
  && cd openvpn* \
  && ./configure --disable-shared --enable-static --disable-plugin-auth-pam \
-        --disable-plugin-down-root --enable-iproute2 \
+        --disable-plugin-down-root --enable-iproute2 --disable-server \
  && make LIBS="-all-static" \
  && make install \
  && cd .. \\
