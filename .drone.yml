@@ -5,6 +5,7 @@ pipeline:
     repo: jonnrb/hostapd
     context: ./hostapd
     dockerfile: ./hostapd/Dockerfile
+    storage_driver: overlay2
     secrets: [ docker_username, docker_password ]
 
   docker_router_base:
@@ -12,6 +13,7 @@ pipeline:
     repo: jonnrb/router_base
     context: ./router_base
     dockerfile: ./router_base/Dockerfile
+    storage_driver: overlay2
     secrets: [ docker_username, docker_password ]
 
   docker_router_openvpn:
@@ -19,4 +21,5 @@ pipeline:
     repo: jonnrb/router_openvpn
     context: ./router_openvpn
     dockerfile: ./router_openvpn/Dockerfile
+    storage_driver: overlay2
     secrets: [ docker_username, docker_password ]
