@@ -36,4 +36,4 @@ run cd hostapd-2.6 \
  && rm -rf /var/cache/apk
 
 add init.sh /
-cmd ["/init.sh"]
+entrypoint ["/init.sh"]
