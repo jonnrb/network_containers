@@ -30,11 +30,14 @@ func (hc *HealthChecker) Handler(w http.ResponseWriter, r *http.Request) {
 	defer cls()
 
 	var err error
-	c := make(chan error)
-	hc.c <- c
-
+	c := make(chan error, 1)
 	select {
-	case err = <-c:
+	case hc.c <- c:
+		select {
+		case err = <-c:
+		case <-ctx.Done():
+			err = ctx.Err()
+		}
 	case <-ctx.Done():
 		err = ctx.Err()
 	}
@@ -55,8 +58,8 @@ func (hc *HealthChecker) Close() error {
 
 func (hc *HealthChecker) loop() {
 	for ret := range hc.c {
-		ctx, klose := context.WithTimeout(context.Background(), 10*time.Second)
-		defer klose()
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
 
 		err := httpHeadCheck(ctx)
 		ret <- err
