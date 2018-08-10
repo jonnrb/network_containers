@@ -54,13 +54,26 @@ func InitFromContainerEnvironment() (*RouterConfiguration, error) {
 		return nil, err
 	}
 
-	var flatNetworkInterfaces []netlink.Link
+	var sr []StaticRoute
 	for _, flatNetwork := range strings.Split(*flatNetworks, ",") {
-		i, err := findInterfaceByDockerNetwork(*lanNetwork, containerJSON)
+		i, err := findInterfaceByDockerNetwork(flatNetwork, containerJSON)
 		if err != nil {
 			return nil, err
 		}
-		flatNetworkInterfaces = append(flatNetworkInterfaces, i)
+
+		n, err := cli.NetworkInspect(context.TODO(), flatNetwork, dockerTypes.NetworkInspectOptions{})
+		if err != nil {
+			return nil, err
+		}
+		if len(n.IPAM.Config) != 1 {
+			return nil, fmt.Errorf("expected 1 IPAM config; got: %v", n.IPAM.Config)
+		}
+		subnet := n.IPAM.Config[0].Subnet
+
+		sr = append(sr, StaticRoute{
+			iface:  i,
+			subnet: subnet,
+		})
 	}
 
 	var uplinkInterface netlink.Link
@@ -82,9 +95,9 @@ func InitFromContainerEnvironment() (*RouterConfiguration, error) {
 	}
 
 	return &RouterConfiguration{
-		lanInterface:          lanInterface,
-		flatNetworkInterfaces: flatNetworkInterfaces,
-		uplinkInterface:       uplinkInterface,
+		lanInterface:    lanInterface,
+		flatNetworks:    sr,
+		uplinkInterface: uplinkInterface,
 	}, nil
 }
 
@@ -102,7 +115,8 @@ func dockerGatewayHacky(lan netlink.Link, cli *docker.Client) error {
 		return fmt.Errorf("found unsupported ipam driver %q", networkJSON.IPAM.Driver)
 	}
 
-	if networkJSON.Driver == "bridge" {
+	switch networkJSON.Driver {
+	case "bridge":
 		found := false
 
 		for _, ipam := range networkJSON.IPAM.Config {
@@ -129,7 +143,7 @@ func dockerGatewayHacky(lan netlink.Link, cli *docker.Client) error {
 		if !found {
 			return errors.New("did not find a suitable ipam on the bridge; DefaultGatewayIPv4 must be set as an aux-address")
 		}
-	} else if networkJSON.Driver == "macvlan" {
+	case "macvlan":
 		for _, ipam := range networkJSON.IPAM.Config {
 			var mask int
 			if a := strings.Split(ipam.Subnet, "/"); len(a) != 2 {
@@ -147,7 +161,7 @@ func dockerGatewayHacky(lan netlink.Link, cli *docker.Client) error {
 			}
 			glog.V(2).Infof("added address %q to lan interface", s)
 		}
-	} else {
+	default:
 		return fmt.Errorf("found unsupported lan network driver for gateway hack: %q", networkJSON.Driver)
 	}
 

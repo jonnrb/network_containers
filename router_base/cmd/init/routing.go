@@ -20,19 +20,17 @@ func (r RouterConfiguration) PatchIPTables() error {
 		return fmt.Errorf("error setting base rules set: %v", err)
 	}
 
-	lanAttrs := r.lanInterface.Attrs()
-	uplinkAttrs := r.uplinkInterface.Attrs()
-
-	if err := forward(r.lanInterface, r.uplinkInterface); err != nil {
-		return err
-	}
-
-	for _, i := range r.flatNetworkInterfaces {
-		if err := forward(r.lanInterface, i); err != nil {
+	for _, s := range r.flatNetworks {
+		if err := forward(r.lanInterface, s.iface, s.subnet); err != nil {
 			return err
 		}
 	}
 
+	if err := forward(r.lanInterface, r.uplinkInterface, ""); err != nil {
+		return err
+	}
+
+	uplinkAttrs := r.uplinkInterface.Attrs()
 	glog.V(2).Infof("setting masquerading out of %q", uplinkAttrs.Name)
 	masqueradeCmd := fmt.Sprintf("-t nat -A POSTROUTING -j MASQUERADE -o %v", uplinkAttrs.Name)
 	glog.V(4).Infof("applying rule %q", masqueradeCmd)
@@ -43,11 +41,17 @@ func (r RouterConfiguration) PatchIPTables() error {
 	return nil
 }
 
-func forward(a, b netlink.Link) error {
-	aAttr, bAttr := a.Attr(), b.Attr()
+func forward(a, b netlink.Link, dst string) error {
+	aAttr, bAttr := a.Attrs(), b.Attrs()
 
-	glog.V(2).Infof("allowing forwarding from %q to %q", aAttr.Name, bAttr.Name)
-	forwardingCmd := fmt.Sprintf("-t filter -A fw-interfaces -j ACCEPT -i %v -o %v", aAttr.Name, bAttr.Name)
+	var forwardingCmd string
+	if dst == "" {
+		glog.V(2).Infof("allowing forwarding from %q to %q", aAttr.Name, bAttr.Name)
+		forwardingCmd = fmt.Sprintf("-t filter -A fw-interfaces -j ACCEPT -i %v -o %v", aAttr.Name, bAttr.Name)
+	} else {
+		glog.V(2).Infof("allowing forwarding from %q to %q with destination %q", aAttr.Name, bAttr.Name, dst)
+		forwardingCmd = fmt.Sprintf("-t filter -A fw-interfaces -j ACCEPT -d %v -i %v -o %v", dst, aAttr.Name, bAttr.Name)
+	}
 	glog.V(4).Infof("applying rule %q", forwardingCmd)
 
 	if err := iptablesRaw(forwardingCmd); err != nil {
