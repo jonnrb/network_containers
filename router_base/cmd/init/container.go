@@ -55,25 +55,27 @@ func InitFromContainerEnvironment() (*RouterConfiguration, error) {
 	}
 
 	var sr []StaticRoute
-	for _, flatNetwork := range strings.Split(*flatNetworks, ",") {
-		i, err := findInterfaceByDockerNetwork(flatNetwork, containerJSON)
-		if err != nil {
-			return nil, err
-		}
+	if *flatNetworks != "" {
+		for _, flatNetwork := range strings.Split(*flatNetworks, ",") {
+			i, err := findInterfaceByDockerNetwork(flatNetwork, containerJSON)
+			if err != nil {
+				return nil, err
+			}
 
-		n, err := cli.NetworkInspect(context.TODO(), flatNetwork, dockerTypes.NetworkInspectOptions{})
-		if err != nil {
-			return nil, err
-		}
-		if len(n.IPAM.Config) != 1 {
-			return nil, fmt.Errorf("expected 1 IPAM config; got: %v", n.IPAM.Config)
-		}
-		subnet := n.IPAM.Config[0].Subnet
+			n, err := cli.NetworkInspect(context.TODO(), flatNetwork, dockerTypes.NetworkInspectOptions{})
+			if err != nil {
+				return nil, err
+			}
+			if len(n.IPAM.Config) != 1 {
+				return nil, fmt.Errorf("expected 1 IPAM config; got: %v", n.IPAM.Config)
+			}
+			subnet := n.IPAM.Config[0].Subnet
 
-		sr = append(sr, StaticRoute{
-			iface:  i,
-			subnet: subnet,
-		})
+			sr = append(sr, StaticRoute{
+				iface:  i,
+				subnet: subnet,
+			})
+		}
 	}
 
 	var uplinkInterface netlink.Link
@@ -90,7 +92,7 @@ func InitFromContainerEnvironment() (*RouterConfiguration, error) {
 	}
 
 	glog.V(2).Info("applying gateway hack")
-	if err = dockerGatewayHacky(lanInterface, cli); err != nil {
+	if err := dockerGatewayHacky(lanInterface, cli); err != nil {
 		return nil, err
 	}
 
@@ -171,7 +173,7 @@ func dockerGatewayHacky(lan netlink.Link, cli *docker.Client) error {
 func findInterfaceByDockerNetwork(dnet string, j dockerTypes.ContainerJSON) (netlink.Link, error) {
 	n, ok := j.NetworkSettings.Networks[dnet]
 	if !ok {
-		return nil, fmt.Errorf("network %q not found on container info", *lanNetwork)
+		return nil, fmt.Errorf("network %q not found on container info", dnet)
 	}
 
 	ip := net.ParseIP(n.IPAddress)
