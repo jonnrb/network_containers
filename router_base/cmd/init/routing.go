@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/golang/glog"
+	"github.com/vishvananda/netlink"
 )
 
 var (
@@ -22,11 +23,14 @@ func (r RouterConfiguration) PatchIPTables() error {
 	lanAttrs := r.lanInterface.Attrs()
 	uplinkAttrs := r.uplinkInterface.Attrs()
 
-	glog.V(2).Infof("allowing forwarding from %q to %q", lanAttrs.Name, uplinkAttrs.Name)
-	forwardingCmd := fmt.Sprintf("-t filter -A fw-interfaces -j ACCEPT -i %v -o %v", lanAttrs.Name, uplinkAttrs.Name)
-	glog.V(4).Infof("applying rule %q", forwardingCmd)
-	if err := iptablesRaw(forwardingCmd); err != nil {
-		return fmt.Errorf("error applying forwarding rule: %v", err)
+	if err := forward(r.lanInterface, r.uplinkInterface); err != nil {
+		return err
+	}
+
+	for _, i := range r.flatNetworkInterfaces {
+		if err := forward(r.lanInterface, i); err != nil {
+			return err
+		}
 	}
 
 	glog.V(2).Infof("setting masquerading out of %q", uplinkAttrs.Name)
@@ -37,6 +41,20 @@ func (r RouterConfiguration) PatchIPTables() error {
 	}
 
 	return nil
+}
+
+func forward(a, b netlink.Link) error {
+	aAttr, bAttr := a.Attr(), b.Attr()
+
+	glog.V(2).Infof("allowing forwarding from %q to %q", aAttr.Name, bAttr.Name)
+	forwardingCmd := fmt.Sprintf("-t filter -A fw-interfaces -j ACCEPT -i %v -o %v", aAttr.Name, bAttr.Name)
+	glog.V(4).Infof("applying rule %q", forwardingCmd)
+
+	if err := iptablesRaw(forwardingCmd); err != nil {
+		return fmt.Errorf("error applying forwarding rule: %v", err)
+	} else {
+		return nil
+	}
 }
 
 func OpenPort(proto, port string) error {

@@ -17,6 +17,7 @@ import (
 
 var (
 	lanNetwork          = flag.String("docker.lan_network", "", "Container network that this container will act as the gateway for")
+	flatNetworks        = flag.String("docker.flat_networks", "", "CSV of container networks that this container will forward to (not masqueraded)")
 	uplinkNetwork       = flag.String("docker.uplink_network", "", "Container network used for uplink (connections will be masqueraded)")
 	uplinkInterfaceName = flag.String("docker.uplink_interface", "", "Interface used for uplink (connections will be masqueraded)")
 )
@@ -53,6 +54,15 @@ func InitFromContainerEnvironment() (*RouterConfiguration, error) {
 		return nil, err
 	}
 
+	var flatNetworkInterfaces []netlink.Link
+	for _, flatNetwork := range strings.Split(*flatNetworks, ",") {
+		i, err := findInterfaceByDockerNetwork(*lanNetwork, containerJSON)
+		if err != nil {
+			return nil, err
+		}
+		flatNetworkInterfaces = append(flatNetworkInterfaces, i)
+	}
+
 	var uplinkInterface netlink.Link
 	if *uplinkInterfaceName != "" {
 		uplinkInterface, err = netlink.LinkByName(*uplinkInterfaceName)
@@ -72,8 +82,9 @@ func InitFromContainerEnvironment() (*RouterConfiguration, error) {
 	}
 
 	return &RouterConfiguration{
-		lanInterface:    lanInterface,
-		uplinkInterface: uplinkInterface,
+		lanInterface:          lanInterface,
+		flatNetworkInterfaces: flatNetworkInterfaces,
+		uplinkInterface:       uplinkInterface,
 	}, nil
 }
 

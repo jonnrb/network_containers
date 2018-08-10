@@ -27,8 +27,9 @@ var (
 )
 
 type RouterConfiguration struct {
-	lanInterface    netlink.Link
-	uplinkInterface netlink.Link
+	lanInterface          netlink.Link
+	flatNetworkInterfaces []netlink.Link
+	uplinkInterface       netlink.Link
 }
 
 func main() {
