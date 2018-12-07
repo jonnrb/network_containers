@@ -1,28 +1,37 @@
-pipeline:
+kind: pipeline
+name: default
 
-  docker_hostapd:
-    image: plugins/docker
+steps:
+- name: docker_hostapd
+  image: plugins/docker
+  settings:
     repo: jonnrb/hostapd
-    settings:
-      context: ./hostapd
-      dockerfile: ./hostapd/Dockerfile
-      storage_driver: overlay2
-      secrets: [ docker_username, docker_password ]
-
-  docker_router_base:
-    image: plugins/docker
+    context: ./hostapd
+    dockerfile: ./hostapd/Dockerfile
+    storage_driver: overlay2
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+- name: docker_router_base
+  image: plugins/docker
+  settings:
     repo: jonnrb/router_base
-    settings:
-      context: ./router_base
-      dockerfile: ./router_base/Dockerfile
-      storage_driver: overlay2
-      secrets: [ docker_username, docker_password ]
-
-  docker_router_openvpn:
+    context: ./router_base
+    dockerfile: ./router_base/Dockerfile
+    storage_driver: overlay2
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+- name: docker_router_openvpn
+  repo: jonnrb/router_openvpn
+  settings:
     image: plugins/docker
-    repo: jonnrb/router_openvpn
-    settings:
-      context: ./router_openvpn
-      dockerfile: ./router_openvpn/Dockerfile
-      storage_driver: overlay2
-      secrets: [ docker_username, docker_password ]
+    context: ./router_openvpn
+    dockerfile: ./router_openvpn/Dockerfile
+    storage_driver: overlay2
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
