@@ -25,9 +25,9 @@ steps:
     password:
       from_secret: docker_password
 - name: docker_router_openvpn
-  repo: jonnrb/router_openvpn
+  image: plugins/docker
   settings:
-    image: plugins/docker
+    repo: jonnrb/router_openvpn
     context: ./router_openvpn
     dockerfile: ./router_openvpn/Dockerfile
     storage_driver: overlay2
