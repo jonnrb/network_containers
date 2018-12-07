@@ -8,19 +8,16 @@ steps:
     repo: jonnrb/hostapd
     context: ./hostapd
     dockerfile: ./hostapd/Dockerfile
-#    storage_driver: overlay2
     username:
       from_secret: docker_username
     password:
       from_secret: docker_password
-    debug: true
 - name: docker_router_base
   image: plugins/docker
   settings:
     repo: jonnrb/router_base
     context: ./router_base
     dockerfile: ./router_base/Dockerfile
-#    storage_driver: overlay2
     username:
       from_secret: docker_username
     password:
@@ -32,7 +29,6 @@ steps:
     repo: jonnrb/router_openvpn
     context: ./router_openvpn
     dockerfile: ./router_openvpn/Dockerfile
-#    storage_driver: overlay2
     username:
       from_secret: docker_username
     password:
