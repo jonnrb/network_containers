@@ -7,6 +7,7 @@ pipeline:
     dockerfile: ./hostapd/Dockerfile
     storage_driver: overlay2
     secrets: [ docker_username, docker_password ]
+    debug: true
 
   docker_router_base:
     image: plugins/docker
@@ -15,6 +16,7 @@ pipeline:
     dockerfile: ./router_base/Dockerfile
     storage_driver: overlay2
     secrets: [ docker_username, docker_password ]
+    debug: true
 
   docker_router_openvpn:
     image: plugins/docker
@@ -23,3 +25,4 @@ pipeline:
     dockerfile: ./router_openvpn/Dockerfile
     storage_driver: overlay2
     secrets: [ docker_username, docker_password ]
+    debug: true
