@@ -22,7 +22,6 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
-    debug: true
 - name: docker_router_openvpn
   image: plugins/docker
   settings:
@@ -33,4 +32,3 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
-    debug: true
