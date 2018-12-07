@@ -9,10 +9,8 @@ run tar xjf iptables.tar.bz2 \
  && make \
  && make install
 
-from golang:1.10.3 as gobuild
-add ./cmd/init /go/src/init
-run cd /go/src/init \
- && CGO_ENABLED=0 GOOS=linux go get .
+from golang:1.11.2 as gobuild
+run CGO_ENABLED=0 GOOS=linux go get go.jonnrb.io/egress/cmd/init
 
 from gcr.io/distroless/base
 copy --from=cbuild /usr/local/sbin/xtables-multi /sbin/iptables
