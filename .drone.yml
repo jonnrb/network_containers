@@ -32,3 +32,13 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
+- name: docker_cloudflare_dns_proxy
+  image: plugins/docker
+  settings:
+    repo: jonnrb/cloudflare_dns_proxy
+    context: ./cloudflare_dns_proxy
+    dockerfile: ./cloudflare_dns_proxy/Dockerfile
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
