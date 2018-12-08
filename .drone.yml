@@ -1,51 +1,72 @@
+---
 kind: pipeline
 name: hostapd
+
+platform:
+  os: linux
+  arch: amd64
+
 steps:
 - name: docker_hostapd
   image: plugins/docker
   settings:
-    repo: jonnrb/hostapd
     context: ./hostapd
     dockerfile: ./hostapd/Dockerfile
-    username:
-      from_secret: docker_username
     password:
       from_secret: docker_password
+    repo: jonnrb/hostapd
+    username:
+      from_secret: docker_username
+
 ---
 kind: pipeline
 name: routers
+
+platform:
+  os: linux
+  arch: amd64
+
 steps:
 - name: docker_router_base
   image: plugins/docker
   settings:
-    repo: jonnrb/router_base
     context: ./router_base
     dockerfile: ./router_base/Dockerfile
-    username:
-      from_secret: docker_username
     password:
       from_secret: docker_password
+    repo: jonnrb/router_base
+    username:
+      from_secret: docker_username
+
 - name: docker_router_openvpn
   image: plugins/docker
   settings:
-    repo: jonnrb/router_openvpn
     context: ./router_openvpn
     dockerfile: ./router_openvpn/Dockerfile
-    username:
-      from_secret: docker_username
     password:
       from_secret: docker_password
+    repo: jonnrb/router_openvpn
+    username:
+      from_secret: docker_username
+
 ---
 kind: pipeline
 name: cloudflare_dns_proxy
+
+platform:
+  os: linux
+  arch: amd64
+
 steps:
 - name: docker_cloudflare_dns_proxy
   image: plugins/docker
   settings:
-    repo: jonnrb/cloudflare_dns_proxy
     context: ./cloudflare_dns_proxy
     dockerfile: ./cloudflare_dns_proxy/Dockerfile
-    username:
-      from_secret: docker_username
     password:
       from_secret: docker_password
+    repo: jonnrb/cloudflare_dns_proxy
+    username:
+      from_secret: docker_username
+
+...
