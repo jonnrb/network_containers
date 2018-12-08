@@ -1,6 +1,5 @@
 kind: pipeline
-name: default
-
+name: hostapd
 steps:
 - name: docker_hostapd
   image: plugins/docker
@@ -12,6 +11,10 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
+---
+kind: pipeline
+name: routers
+steps:
 - name: docker_router_base
   image: plugins/docker
   settings:
@@ -32,6 +35,10 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
+---
+kind: pipeline
+name: cloudflare_dns_proxy
+steps:
 - name: docker_cloudflare_dns_proxy
   image: plugins/docker
   settings:

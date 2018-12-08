@@ -1,4 +1,4 @@
-# cloudflare_dns_proxy [![Build Status](https://drone.jonnrb.com/api/badges/jon/network_containers/status.svg?branch=master)](https://drone.jonnrb.com/jon/network_containers)
+# cloudflare\_dns\_proxy [![Build Status](https://drone.jonnrb.com/api/badges/jon/network_containers/status.svg?branch=master)](https://drone.jonnrb.com/jon/network_containers)
 
 Uses `cloudflared` to open a DNS-over-HTTPS proxy to `1.1.1.1`.
 
