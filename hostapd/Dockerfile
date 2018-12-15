@@ -1,8 +1,7 @@
 from golang:1.10.3 as gobuild
 run go get github.com/jonnrb/docker_utils/get_bridge_name
 
-from golang:alpine
-copy --from=gobuild /go/bin/get_bridge_name /bin/
+from alpine as apbuild
 run apk update && apk add alpine-sdk git iw
 workdir /
 copy hostapd-2.6.tar.gz *.patch /
@@ -19,7 +18,7 @@ run tar xzf hostapd-2.6.tar.gz \
  && patch -s -p1 < rebased-v2.6-0006-TDLS-Reject-TPK-TK-reconfiguration.patch \
  && patch -s -p1 < rebased-v2.6-0008-FT-Do-not-allow-multiple-Reassociation-Response-fram.patch
 
-# Configure, build, install, cleanup
+# Configure, build, install
 run cd hostapd-2.6 \
  && cd hostapd \
  && cp defconfig .config \
@@ -30,10 +29,13 @@ run cd hostapd-2.6 \
  && sed -i '/CONFIG_IEEE80211N=y/s/^#//' .config \
  && apk add linux-headers libnl libnl-dev openssl openssl-dev \
  && make \
- && make install \
- && rm -rf hostapd-2.6 hostapd-2.6.tar.gz \
- && apk del linux-headers libnl-dev openssl-dev alpine-sdk git \
- && rm -rf /var/cache/apk
+ && make install
 
+from alpine
+copy --from=gobuild /go/bin/get_bridge_name /bin/
+copy --from=apbuild /usr/local/bin/hostapd* /usr/local/bin/
+copy --from=apbuild /usr/lib/libnl* /usr/lib/
+copy --from=apbuild /lib/libcrypto* /lib/libssl* /lib/
+copy --from=apbuild /usr/sbin/iw /usr/sbin/
 add init.sh /
 entrypoint ["/init.sh"]
