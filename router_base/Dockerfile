@@ -9,7 +9,7 @@ run tar xjf iptables.tar.bz2 \
  && make \
  && make install
 
-from golang:1.11.2 as gobuild
+from quay.io/jonnrb/go as gobuild
 run CGO_ENABLED=0 GOOS=linux go get go.jonnrb.io/egress/cmd/init
 
 from gcr.io/distroless/base
