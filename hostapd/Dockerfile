@@ -1,4 +1,4 @@
-from golang:1.10.3 as gobuild
+from quay.io/jonnrb/go as gobuild
 run go get github.com/jonnrb/docker_utils/get_bridge_name
 
 from alpine as apbuild
