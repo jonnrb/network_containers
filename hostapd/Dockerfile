@@ -1,7 +1,4 @@
-from quay.io/jonnrb/go as gobuild
-run go get github.com/jonnrb/docker_utils/get_bridge_name
-
-from alpine:3.8 as apbuild
+from alpine:3.8 as build
 env HOSTAPD_SRC https://w1.fi/releases/hostapd-2.7.tar.gz
 env HOSTAPD_HASH 21b0dda3cc3abe75849437f6b9746da461f88f0ea49dd621216936f87440a141
 add $HOSTAPD_SRC hostapd.tar.gz
@@ -20,10 +17,10 @@ run apk add --no-cache alpine-sdk git iw linux-headers libnl3-dev openssl-dev \
  && make install
 
 from gcr.io/distroless/static
-copy --from=gobuild /go/bin/get_bridge_name /bin/
-copy --from=apbuild /usr/local/bin/hostapd* /usr/local/bin/
-copy --from=apbuild /lib/libc* /lib/ld* /usr/lib/libnl* /lib/libcrypto* \
+copy --from=build /usr/local/bin/hostapd* /usr/local/bin/
+copy --from=build /lib/libc* /lib/ld* /usr/lib/libnl* /lib/libcrypto* \
      /lib/libssl* /lib/libz* /lib/
-copy --from=apbuild /usr/sbin/iw /usr/sbin/
+copy --from=build /usr/sbin/iw /usr/sbin/
 add init.sh /
-entrypoint ["/init.sh"]
+entrypoint ["/usr/local/bin/hostapd"]
+cmd ["/etc/hostapd.conf"]
