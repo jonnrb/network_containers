@@ -1,25 +1,14 @@
 from quay.io/jonnrb/go as gobuild
 run go get github.com/jonnrb/docker_utils/get_bridge_name
 
-from alpine as apbuild
-run apk update && apk add alpine-sdk git iw
-workdir /
-copy hostapd-2.6.tar.gz *.patch /
-
-# Untar and add security patches
-run tar xzf hostapd-2.6.tar.gz \
- && mv *.patch hostapd-2.6 \
- && cd hostapd-2.6 \
- && patch -s -p1 < rebased-v2.6-0001-hostapd-Avoid-key-reinstallation-in-FT-handshake.patch \
- && patch -s -p1 < rebased-v2.6-0002-Prevent-reinstallation-of-an-already-in-use-group-ke.patch \
- && patch -s -p1 < rebased-v2.6-0003-Extend-protection-of-GTK-IGTK-reinstallation-of-WNM-.patch \
- && patch -s -p1 < rebased-v2.6-0004-Prevent-installation-of-an-all-zero-TK.patch \
- && patch -s -p1 < rebased-v2.6-0005-Fix-PTK-rekeying-to-generate-a-new-ANonce.patch \
- && patch -s -p1 < rebased-v2.6-0006-TDLS-Reject-TPK-TK-reconfiguration.patch \
- && patch -s -p1 < rebased-v2.6-0008-FT-Do-not-allow-multiple-Reassociation-Response-fram.patch
-
-# Configure, build, install
-run cd hostapd-2.6 \
+from alpine:3.8 as apbuild
+env HOSTAPD_SRC https://w1.fi/releases/hostapd-2.7.tar.gz
+env HOSTAPD_HASH 21b0dda3cc3abe75849437f6b9746da461f88f0ea49dd621216936f87440a141
+add $HOSTAPD_SRC hostapd.tar.gz
+run apk add --no-cache alpine-sdk git iw linux-headers libnl3-dev openssl-dev \
+ && echo "$HOSTAPD_HASH  hostapd.tar.gz" |sha256sum -c - \
+ && tar xf hostapd.tar.gz \
+ && cd hostapd-2.7 \
  && cd hostapd \
  && cp defconfig .config \
  && sed -i '/CONFIG_ACS=y/s/^#//' .config \
@@ -27,15 +16,14 @@ run cd hostapd-2.6 \
  && sed -i '/CONFIG_TLSV12=y/s/^#//' .config \
  && sed -i '/CONFIG_IEEE80211AC=y/s/^#//' .config \
  && sed -i '/CONFIG_IEEE80211N=y/s/^#//' .config \
- && apk add linux-headers libnl libnl-dev openssl openssl-dev \
  && make \
  && make install
 
-from alpine
+from gcr.io/distroless/static
 copy --from=gobuild /go/bin/get_bridge_name /bin/
 copy --from=apbuild /usr/local/bin/hostapd* /usr/local/bin/
-copy --from=apbuild /usr/lib/libnl* /usr/lib/
-copy --from=apbuild /lib/libcrypto* /lib/libssl* /lib/
+copy --from=apbuild /lib/libc* /lib/ld* /usr/lib/libnl* /lib/libcrypto* \
+     /lib/libssl* /lib/libz* /lib/
 copy --from=apbuild /usr/sbin/iw /usr/sbin/
 add init.sh /
 entrypoint ["/init.sh"]
