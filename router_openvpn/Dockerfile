@@ -1,6 +1,7 @@
 from alpine:3.8 as build
 workdir /
-run apk add --no-cache gcc libc-dev openssl-dev lz4-dev lzo-dev libmnl-dev linux-headers bash bison flex make pkgconfig 
+run apk add --no-cache gcc libc-dev openssl-dev lz4-dev lzo-dev libmnl-dev \
+  linux-headers bash bison flex make pkgconfig 
 
 from build as iproute2_build
 env IPROUTE2_SRC https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/snapshot/iproute2-4.19.0.tar.gz
@@ -27,6 +28,7 @@ run echo "$OPENVPN_HASH  openvpn.tar.gz" |sha256sum -c - \
 from jonnrb/router_base
 copy --from=iproute2_build /etc/iproute2 /etc/iproute2
 copy --from=iproute2_build /sbin/ip /sbin/ip
+copy --from=iproute2_build /usr/lib/libmnl.so* /lib/
 copy --from=openvpn_build /usr/local/sbin/openvpn /sbin/openvpn
 copy --from=openvpn_build /lib/libcrypto.so* /lib/libssl.so* \
      /usr/lib/liblzo2.so* /usr/lib/liblz4.so* /lib/libz.so* /lib/
