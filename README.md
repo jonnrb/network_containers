@@ -9,7 +9,7 @@ These are some containers I use to abuse Docker networks.
    network to another. Also serves as a base image for more custom router-type
    network appliances.
 
- - [router\_openvpn](./router_base): Builds on router\_base to provide an
+ - [router\_openvpn](./router_openvpn): Builds on router\_base to provide an
    [OpenVPN](https://openvpn.net/index.php/open-source.html) client that
    masquerades a network's traffic.
 
