@@ -69,4 +69,25 @@ steps:
     username:
       from_secret: docker_username
 
+---
+kind: pipeline
+name: reverse_single
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: docker_reverse_single
+  image: plugins/docker
+  settings:
+    context: ./reverse_single
+    dockerfile: ./reverse_single/Dockerfile
+    password:
+      from_secret: quay_password
+    repo: quay.io/jonnrb/cloudflare_dns_proxy
+    registry: quay.io
+    username:
+      from_secret: quay_username
+
 ...
