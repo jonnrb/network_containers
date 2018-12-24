@@ -12,7 +12,8 @@ run echo "$SRC_HASH  iptables.tar.bz2" |sha256sum -c - \
  && make install
 
 from quay.io/jonnrb/go as gobuild
-run CGO_ENABLED=0 GOOS=linux go get go.jonnrb.io/egress/cmd/init
+run git clone https://git.jonnrb.com/jon/egress . \
+ && CGO_ENABLED=0 GOOS=linux go get ./cmd/init
 
 from gcr.io/distroless/static
 copy --from=cbuild /usr/local/sbin/xtables-legacy-multi /sbin/iptables
