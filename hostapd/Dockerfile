@@ -21,6 +21,5 @@ copy --from=build /usr/local/bin/hostapd* /usr/local/bin/
 copy --from=build /lib/libc* /lib/ld* /usr/lib/libnl* /lib/libcrypto* \
      /lib/libssl* /lib/libz* /lib/
 copy --from=build /usr/sbin/iw /usr/sbin/
-add init.sh /
 entrypoint ["/usr/local/bin/hostapd"]
 cmd ["/etc/hostapd.conf"]
