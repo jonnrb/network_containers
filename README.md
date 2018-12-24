@@ -12,3 +12,10 @@ These are some containers I use to abuse Docker networks.
  - [router\_openvpn](./router_base): Builds on router\_base to provide an
    [OpenVPN](https://openvpn.net/index.php/open-source.html) client that
    masquerades a network's traffic.
+
+And these are some one-off containers:
+
+ - [cloudflare\_dns\_proxy](./cloudflare_dns_proxy): Proxies incoming DNS
+   questions to Cloudflare's 1.1.1.1 service over TLS.
+
+ - [reverse\_single](./reverse_single): HTTP reverse proxy for a single service.
