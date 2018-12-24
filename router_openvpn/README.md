@@ -1,4 +1,4 @@
-# [jonnrb/router\_openvpn](https://hub.docker.com/r/jonnrb/router_openvpn) [![Build Status](https://drone.jonnrb.com/api/badges/jon/network_containers/status.svg?branch=master)](https://drone.jonnrb.com/jon/network_containers)
+# jonnrb/router\_openvpn [![Build Status](https://drone.jonnrb.com/api/badges/jon/network_containers/status.svg?branch=master)](https://drone.jonnrb.com/jon/network_containers) [![Docker Repository on Quay](https://quay.io/repository/jonnrb/router_openvpn/status "Docker Repository on Quay")](https://quay.io/repository/jonnrb/router_openvpn)
 
 ### Usage
 

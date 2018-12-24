@@ -1,1 +1,1 @@
-# [jonnrb/hostapd](https://hub.docker.com/r/jonnrb/hostapd) [![Build Status](https://drone.jonnrb.com/api/badges/jon/network_containers/status.svg?branch=master)](https://drone.jonnrb.com/jon/network_containers)
+# quay.io/jonnrb/hostapd [![Build Status](https://drone.jonnrb.com/api/badges/jon/network_containers/status.svg?branch=master)](https://drone.jonnrb.com/jon/network_containers) [![Docker Repository on Quay](https://quay.io/repository/jonnrb/hostapd/status "Docker Repository on Quay")](https://quay.io/repository/jonnrb/hostapd)

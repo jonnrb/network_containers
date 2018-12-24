@@ -1,4 +1,4 @@
-# [jonnrb/router\_base](https://hub.docker.com/r/jonnrb/router_base) [![Build Status](https://drone.jonnrb.com/api/badges/jon/network_containers/status.svg?branch=master)](https://drone.jonnrb.com/jon/network_containers)
+# jonnrb/router\_base [![Build Status](https://drone.jonnrb.com/api/badges/jon/network_containers/status.svg?branch=master)](https://drone.jonnrb.com/jon/network_containers) [![Docker Repository on Quay](https://quay.io/repository/jonnrb/router_base/status "Docker Repository on Quay")](https://quay.io/repository/jonnrb/router_base)
 
 Base image for creating a more interesting Docker router. (Can be used by
 itself too.) This image provides an entrypoint (init program) that sets up

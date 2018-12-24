@@ -13,10 +13,11 @@ steps:
     context: ./hostapd
     dockerfile: ./hostapd/Dockerfile
     password:
-      from_secret: docker_password
-    repo: jonnrb/hostapd
+      from_secret: quay_password
+    registry: quay.io
+    repo: quay.io/jonnrb/hostapd
     username:
-      from_secret: docker_username
+      from_secret: quay_username
 
 ---
 kind: pipeline
@@ -33,10 +34,11 @@ steps:
     context: ./router_base
     dockerfile: ./router_base/Dockerfile
     password:
-      from_secret: docker_password
-    repo: jonnrb/router_base
+      from_secret: quay_password
+    registry: quay.io
+    repo: quay.io/jonnrb/router_base
     username:
-      from_secret: docker_username
+      from_secret: quay_username
 
 - name: docker_router_openvpn
   image: plugins/docker
@@ -44,10 +46,11 @@ steps:
     context: ./router_openvpn
     dockerfile: ./router_openvpn/Dockerfile
     password:
-      from_secret: docker_password
-    repo: jonnrb/router_openvpn
+      from_secret: quay_password
+    registry: quay.io
+    repo: quay.io/jonnrb/router_openvpn
     username:
-      from_secret: docker_username
+      from_secret: quay_username
 
 ---
 kind: pipeline
@@ -64,10 +67,11 @@ steps:
     context: ./cloudflare_dns_proxy
     dockerfile: ./cloudflare_dns_proxy/Dockerfile
     password:
-      from_secret: docker_password
-    repo: jonnrb/cloudflare_dns_proxy
+      from_secret: quay_password
+    registry: quay.io
+    repo: quay.io/jonnrb/cloudflare_dns_proxy
     username:
-      from_secret: docker_username
+      from_secret: quay_username
 
 ---
 kind: pipeline
