@@ -89,7 +89,7 @@ steps:
     dockerfile: ./reverse_single/Dockerfile
     password:
       from_secret: quay_password
-    repo: quay.io/jonnrb/cloudflare_dns_proxy
+    repo: quay.io/jonnrb/reverse_single
     registry: quay.io
     username:
       from_secret: quay_username
