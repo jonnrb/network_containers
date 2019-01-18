@@ -94,4 +94,25 @@ steps:
     username:
       from_secret: quay_username
 
+---
+kind: pipeline
+name: tcp_proxy
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: docker_reverse_single
+  image: plugins/docker
+  settings:
+    context: ./tcp_proxy
+    dockerfile: ./tcp_proxy/Dockerfile
+    password:
+      from_secret: quay_password
+    repo: quay.io/jonnrb/tcp_proxy
+    registry: quay.io
+    username:
+      from_secret: quay_username
+
 ...
