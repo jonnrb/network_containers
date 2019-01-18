@@ -89,8 +89,8 @@ steps:
     dockerfile: ./reverse_single/Dockerfile
     password:
       from_secret: quay_password
-    repo: quay.io/jonnrb/reverse_single
     registry: quay.io
+    repo: quay.io/jonnrb/reverse_single
     username:
       from_secret: quay_username
 
@@ -103,15 +103,15 @@ platform:
   arch: amd64
 
 steps:
-- name: docker_reverse_single
+- name: docker_tcp_proxy
   image: plugins/docker
   settings:
     context: ./tcp_proxy
     dockerfile: ./tcp_proxy/Dockerfile
     password:
       from_secret: quay_password
-    repo: quay.io/jonnrb/tcp_proxy
     registry: quay.io
+    repo: quay.io/jonnrb/tcp_proxy
     username:
       from_secret: quay_username
 
