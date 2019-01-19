@@ -21,6 +21,27 @@ steps:
 
 ---
 kind: pipeline
+name: openvpn
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: docker_openvpn
+  image: plugins/docker
+  settings:
+    context: ./openvpn
+    dockerfile: ./openvpn/Dockerfile
+    password:
+      from_secret: quay_password
+    registry: quay.io
+    repo: quay.io/jonnrb/openvpn
+    username:
+      from_secret: quay_username
+
+---
+kind: pipeline
 name: cloudflare_dns_proxy
 
 platform:
