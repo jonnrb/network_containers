@@ -30,7 +30,8 @@ copy --from=iproute2_build /etc/iproute2 /etc/iproute2
 copy --from=iproute2_build /sbin/ip /sbin/ip
 copy --from=iproute2_build /usr/lib/libmnl.so* /lib/
 copy --from=openvpn_build /usr/local/sbin/openvpn /sbin/openvpn
-copy --from=openvpn_build /lib/libcrypto.so* /lib/libssl.so* \
-     /usr/lib/liblzo2.so* /usr/lib/liblz4.so* /lib/libz.so* /lib/
+copy --from=openvpn_build /lib/libc* /lib/ld* /lib/libcrypto.so* \
+     /lib/libssl.so* /usr/lib/liblzo2.so* /usr/lib/liblz4.so* /lib/libz.so* \
+     /lib/
 entrypoint ["/sbin/openvpn"]
 cmd ["/data/openvpn.conf"]
