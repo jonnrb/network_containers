@@ -25,7 +25,7 @@ run echo "$OPENVPN_HASH  openvpn.tar.gz" |sha256sum -c - \
  && make \
  && make install
 
-from gcr.io/distriless/base
+from gcr.io/distroless/base
 copy --from=iproute2_build /etc/iproute2 /etc/iproute2
 copy --from=iproute2_build /sbin/ip /sbin/ip
 copy --from=iproute2_build /usr/lib/libmnl.so* /lib/
