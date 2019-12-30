@@ -1,11 +1,11 @@
-from alpine:3.8 as build
-env HOSTAPD_SRC https://w1.fi/releases/hostapd-2.7.tar.gz
-env HOSTAPD_HASH 21b0dda3cc3abe75849437f6b9746da461f88f0ea49dd621216936f87440a141
+from alpine:3.10 as build
+env HOSTAPD_SRC https://w1.fi/releases/hostapd-2.9.tar.gz
+env HOSTAPD_HASH 881d7d6a90b2428479288d64233151448f8990ab4958e0ecaca7eeb3c9db2bd7
 add $HOSTAPD_SRC hostapd.tar.gz
 run apk add --no-cache alpine-sdk git iw linux-headers libnl3-dev openssl-dev \
  && echo "$HOSTAPD_HASH  hostapd.tar.gz" |sha256sum -c - \
  && tar xf hostapd.tar.gz \
- && cd hostapd-2.7 \
+ && cd hostapd-2.9 \
  && cd hostapd \
  && cp defconfig .config \
  && sed -i '/CONFIG_ACS=y/s/^#//' .config \
