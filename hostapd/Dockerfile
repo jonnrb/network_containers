@@ -13,6 +13,7 @@ run apk add --no-cache alpine-sdk git iw linux-headers libnl3-dev openssl-dev \
  && sed -i '/CONFIG_TLSV12=y/s/^#//' .config \
  && sed -i '/CONFIG_IEEE80211AC=y/s/^#//' .config \
  && sed -i '/CONFIG_IEEE80211N=y/s/^#//' .config \
+ && sed -i '/CONFIG_AIRTIME_POLICY=y/s/^#//' .config \
  && make \
  && make install
 
